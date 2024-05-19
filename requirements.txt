@@ -1,0 +1,4 @@
+identity[quart]>=0.8,<0.9
+quart-session[redis]
+httpx
+python-dotenv<0.22
