@@ -1,27 +1,24 @@
 import os
 import httpx
 from quart import Quart, render_template
-from identity.quart import Auth
+from auth import auth
 
 
-__version__ = "0.1.0"  # The version of this sample, for troubleshooting purpose
+__version__ = "0.2.0"  # The version of this sample, for troubleshooting purpose
 
-app = Quart(__name__)
-app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_URI'] = 'redis://localhost:6379'  # Assuming your Redis server is here
-    # In production, your web servers shall share one centralized session storage
-auth = Auth(
-    app,
-    authority=os.getenv("AUTHORITY"),
-    client_id=os.getenv("CLIENT_ID"),
-    client_credential=os.getenv("CLIENT_SECRET"),
-    redirect_uri=os.getenv("REDIRECT_URI"),
-    oidc_authority=os.getenv("OIDC_AUTHORITY"),
-    b2c_tenant_name=os.getenv('B2C_TENANT_NAME'),
-    b2c_signup_signin_user_flow=os.getenv('SIGNUPSIGNIN_USER_FLOW'),
-    b2c_edit_profile_user_flow=os.getenv('EDITPROFILE_USER_FLOW'),
-    b2c_reset_password_user_flow=os.getenv('RESETPASSWORD_USER_FLOW'),
-)
+def create_app():
+    app = Quart(__name__)
+    app.config['SESSION_TYPE'] = 'redis'
+    app.config['SESSION_URI'] = 'redis://localhost:6379'  # Assuming your Redis server is here
+        # In production, your web servers shall share one centralized session storage
+    auth.init_app(app)
+
+    ## You could also register a blueprint here
+    #app.register_blueprint(my_module.bp)
+
+    return app
+
+app = create_app()
 
 @app.route("/")
 @auth.login_required
